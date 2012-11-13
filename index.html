@@ -1,0 +1,134 @@
+<!doctype html>
+<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
+<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on http://github.com/jonrohan -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen"/>
+  <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="javascripts/script.js"></script>
+
+  <title>Gitlab-ci</title>
+  <meta name="description" content="GitLab Simple Ci runner">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <header>
+      <h1 class="title">Gitlab-ci</h1>
+    </header>
+    <div id="container">
+      <p class="tagline">GitLab Simple Ci runner</p>
+      <div id="main" role="main">
+        <div class="download-bar">
+        <div class="inner">
+          <a href="https://github.com/gitlabhq/gitlab-ci/tarball/master" class="download-button tar"><span>Download</span></a>
+          <a href="https://github.com/gitlabhq/gitlab-ci/zipball/master" class="download-button zip"><span>Download</span></a>
+          <a href="https://github.com/gitlabhq/gitlab-ci" class="code">View Gitlab-ci on GitHub</a>
+        </div>
+        <span class="blc"></span><span class="trc"></span>
+        </div>
+        <article class="markdown-body">
+          <h1>Welcome to the GitLab CI!</h1>
+
+<h2>GitLab CI is an open-source continuous integration server</h2>
+
+<p><img src="https://github.com/downloads/gitlabhq/gitlab-ci/gitlab_ci_preview.png" alt="Screen"></p>
+
+<h1>Setup:</h1>
+
+<h2>1. Required packages:</h2>
+
+<pre><code>sudo apt-get update
+sudo apt-get upgrade
+
+sudo apt-get install -y wget curl gcc checkinstall libxml2-dev libxslt-dev libcurl4-openssl-dev libreadline6-dev libc6-dev libssl-dev libmysql++-dev make build-essential zlib1g-dev redis-server openssh-server git-core python-dev python-pip libyaml-dev postfix libpq-dev
+
+sudo pip install pygments
+</code></pre>
+
+<h2>2. Install Ruby</h2>
+
+<pre><code>wget http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p194.tar.gz
+tar xfvz ruby-1.9.3-p194.tar.gz
+cd ruby-1.9.3-p194
+./configure
+make
+sudo make install
+</code></pre>
+
+<h2>3. Get code</h2>
+
+<pre><code>git clone https://github.com/gitlabhq/gitlab-ci.git
+</code></pre>
+
+<h2>4. Setup application</h2>
+
+<pre><code># bundle
+
+# Login to MySQL
+$ mysql -u root -p
+
+# Create the GitLab CI database
+mysql&gt; CREATE DATABASE IF NOT EXISTS `gitlab_ci_production` DEFAULT CHARACTER SET `utf8` COLLATE `utf8_unicode_ci`;
+
+# Create the MySQL User change $password to a real password
+mysql&gt; CREATE USER 'gitlab_ci'@'localhost' IDENTIFIED BY '$password';
+
+# Grant proper permissions to the MySQL User
+mysql&gt; GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER ON `gitlab_ci_production`.* TO 'gitlab_ci'@'localhost';
+
+
+# Copy config file
+cp config/database.yml.example config/database.yml
+
+# Setup DB
+bundle exec rake db:setup
+</code></pre>
+
+<h2>5. Run</h2>
+
+<pre><code># For development 
+bundle exec foreman start -p 3000
+
+
+# For production
+bundle exec thin start -p 3000 -d -e production
+bundle exec rake environment resque:work RAILS_ENV=production PIDFILE=./resque.pid BACKGROUND=yes QUEUE=runner 
+</code></pre>
+
+<h2>6. Login</h2>
+
+<pre><code>admin@local.host # email
+5iveL!fe # password
+</code></pre>
+        </article>
+      </div>
+    </div>
+    <footer>
+      <div class="owner">
+      <p><a href="https://github.com/gitlabhq" class="avatar"><img src="https://secure.gravatar.com/avatar/95b7f387358639ec09184a76151bc690?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png" width="48" height="48"/></a> <a href="https://github.com/gitlabhq">gitlabhq</a> maintains <a href="https://github.com/gitlabhq/gitlab-ci">Gitlab-ci</a></p>
+
+
+      </div>
+      <div class="creds">
+        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br/>theme by <a href="http://twitter.com/jonrohan/">Jon Rohan</a></small>
+      </div>
+    </footer>
+  </div>
+  <div class="current-section">
+    <a href="#top">Scroll to top</a>
+    <a href="https://github.com/gitlabhq/gitlab-ci/tarball/master" class="tar">tar</a><a href="https://github.com/gitlabhq/gitlab-ci/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
+    <p class="name"></p>
+  </div>
+
+  
+</body>
+</html>
