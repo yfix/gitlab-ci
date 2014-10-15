@@ -9,7 +9,7 @@ describe API::API do
   }
   
   describe "GET /runners" do
-    let(:gitlab_url) { GitlabCi.config.allowed_gitlab_urls.first }
+    let(:gitlab_url) { GitlabCi.config.gitlab_server_urls.first }
     let(:auth_opts) {
       {
         :email => "test@test.com",
@@ -40,7 +40,7 @@ describe API::API do
 
   describe "POST /runners/register" do
     it "should create a runner if token provided" do
-      post api("/runners/register"), token: GitlabCi::RUNNERS_TOKEN, public_key: 'sha-rsa ....'
+      post api("/runners/register"), token: GitlabCi::REGISTRATION_TOKEN, public_key: 'sha-rsa ....'
 
       response.status.should == 201
     end

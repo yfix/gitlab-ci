@@ -23,12 +23,12 @@ below. If you are not familiar with vim please skip this and keep using
 the default editor.
 
     # Install vim
-    sudo apt-get install -y vim
+    sudo apt-get install vim
     sudo update-alternatives --set editor /usr/bin/vim.basic
 
 Install the required packages:
 
-    sudo apt-get install -y wget curl gcc checkinstall libxml2-dev libxslt-dev libcurl4-openssl-dev libreadline6-dev libc6-dev libssl-dev libmysql++-dev make build-essential zlib1g-dev openssh-server git-core libyaml-dev postfix libpq-dev libicu-dev
+    sudo apt-get install wget curl gcc checkinstall libxml2-dev libxslt-dev libcurl4-openssl-dev libreadline6-dev libc6-dev libssl-dev libmysql++-dev make build-essential zlib1g-dev openssh-server git-core libyaml-dev postfix libpq-dev libicu-dev
     sudo apt-get install redis-server 
 
 # 2. Ruby
@@ -59,7 +59,7 @@ You can use either MySQL or PostgreSQL.
 ### MySQL
 
     # Install the database packages
-    sudo apt-get install -y mysql-server mysql-client libmysqlclient-dev
+    sudo apt-get install mysql-server mysql-client libmysqlclient-dev
 
     # Login to MySQL
     $ mysql -u root -p
@@ -84,10 +84,10 @@ You can use either MySQL or PostgreSQL.
     # Login to PostgreSQL
     sudo -u postgres psql -d template1
 
-    # Create a user for GitLab. We do not specify a password because we are using peer authentication.
+    # Create a user for GitLab CI. We do not specify a password because we are using peer authentication.
     template1=# CREATE USER gitlab_ci;
 
-    # Create the GitLab production database & grant all privileges on database
+    # Create the GitLab CI production database & grant all privileges on database
     template1=# CREATE DATABASE gitlab_ci_production OWNER gitlab_ci;
 
     # Quit the database session
@@ -104,13 +104,16 @@ You can use either MySQL or PostgreSQL.
 
     cd gitlab-ci
 
-    sudo -u gitlab_ci -H git checkout 4-3-stable
+    sudo -u gitlab_ci -H git checkout 5-0-stable
 
 ## 6. Setup application
 
     # Edit application settings
+    # Production
     sudo -u gitlab_ci -H cp config/application.yml.example config/application.yml
     sudo -u gitlab_ci -H editor config/application.yml
+    # Development
+    #sudo -u gitlab_ci -H cp config/application.yml.example.development config/application.yml
 
     # Edit web server settings
     sudo -u gitlab_ci -H cp config/unicorn.rb.example config/unicorn.rb
@@ -142,11 +145,9 @@ You can use either MySQL or PostgreSQL.
     sudo -u gitlab_ci -H editor config/database.yml
 
     # Setup tables
-    sudo -u gitlab_ci -H bundle exec rake db:setup RAILS_ENV=production
+    sudo -u gitlab_ci -H bundle exec rake setup RAILS_ENV=production
     
-
     # Setup schedules
-    #
     sudo -u gitlab_ci -H bundle exec whenever -w RAILS_ENV=production
    
 
@@ -156,12 +157,12 @@ Copy the init script (will be /etc/init.d/gitlab_ci):
 
     sudo cp /home/gitlab_ci/gitlab-ci/lib/support/init.d/gitlab_ci /etc/init.d/gitlab_ci
 
-Make GitLab start on boot:
+Make GitLab CI start on boot:
 
     sudo update-rc.d gitlab_ci defaults 21
 
 
-Start your GitLab instance:
+Start your GitLab CI instance:
 
     sudo service gitlab_ci start
     # or
@@ -172,6 +173,7 @@ Start your GitLab instance:
 
 
 ## Installation
+
     sudo apt-get install nginx
 
 ## Site Configuration
@@ -197,7 +199,6 @@ Make sure to edit the config file to match your setup:
     sudo /etc/init.d/nginx start
 
 
-
 # 9. Runners
 
 
@@ -211,8 +212,6 @@ Visit YOUR_SERVER for your first GitLab CI login.
 You should use your GitLab credentials in order to login
 
 **Enjoy!**
-
-
 
 ## Advanced settings
 

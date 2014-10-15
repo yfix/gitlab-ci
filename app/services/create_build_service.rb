@@ -8,11 +8,21 @@ class CreateBuildService
       ref = ref.scan(/heads\/(.*)$/).flatten[0]
     end
 
+    return false if project.skip_ref?(ref)
+
     data = {
       ref: ref,
       sha: sha,
       before_sha: before_sha,
-      push_data: params
+      push_data: {
+        before: before_sha,
+        after: sha,
+        ref: ref,
+        user_name: params[:user_name],
+        repository: params[:repository],
+        commits: params[:commits],
+        total_commits_count: params[:total_commits_count]
+      }
     }
 
     project.builds.create(data)

@@ -2,35 +2,36 @@
 #
 # Table name: projects
 #
-#  id                      :integer          not null, primary key
-#  name                    :string(255)      not null
-#  timeout                 :integer          default(1800), not null
-#  scripts                 :text             not null
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  token                   :string(255)
-#  default_ref             :string(255)
-#  gitlab_url              :string(255)
-#  always_build            :boolean          default(FALSE), not null
-#  polling_interval        :integer
-#  public                  :boolean          default(FALSE), not null
-#  ssh_url_to_repo         :string(255)
-#  gitlab_id               :integer
-#  allow_git_fetch         :boolean          default(TRUE), not null
-#  email_recipients        :string(255)      default(""), not null
-#  email_add_committer     :boolean          default(TRUE), not null
+#  id                       :integer          not null, primary key
+#  name                     :string(255)      not null
+#  timeout                  :integer          default(1800), not null
+#  scripts                  :text             not null
+#  created_at               :datetime
+#  updated_at               :datetime
+#  token                    :string(255)
+#  default_ref              :string(255)
+#  gitlab_url               :string(255)
+#  always_build             :boolean          default(FALSE), not null
+#  polling_interval         :integer
+#  public                   :boolean          default(FALSE), not null
+#  ssh_url_to_repo          :string(255)
+#  gitlab_id                :integer
+#  allow_git_fetch          :boolean          default(TRUE), not null
+#  email_recipients         :string(255)      default(""), not null
+#  email_add_committer      :boolean          default(TRUE), not null
 #  email_only_broken_builds :boolean          default(TRUE), not null
 #
 
 class Project < ActiveRecord::Base
-  attr_accessible :name, :path, :scripts, :timeout, :token,
+  attr_accessible :name, :path, :scripts, :timeout, :token, :timeout_in_minutes,
     :default_ref, :gitlab_url, :always_build, :polling_interval,
-    :public, :ssh_url_to_repo, :gitlab_id, :allow_git_fetch,
-    :email_recipients, :email_add_committer, :email_only_broken_builds
+    :public, :ssh_url_to_repo, :gitlab_id, :allow_git_fetch, :skip_refs,
+    :email_recipients, :email_add_committer, :email_only_broken_builds, :coverage_regex
 
   has_many :builds, dependent: :destroy
   has_many :runner_projects, dependent: :destroy
   has_many :runners, through: :runner_projects
+  has_many :web_hooks, dependent: :destroy
 
   #
   # Validations
@@ -155,11 +156,35 @@ ls -la
     email_add_committer || email_recipients.present?
   end
 
+  def web_hooks?
+    web_hooks.any?
+  end
+
   # onlu check for toggling build status within same ref.
   def last_build_changed_status?
     ref = last_build.ref
     last_builds = builds.where(ref: ref).order('id DESC').limit(2)
     return false if last_builds.size < 2
     return last_builds[0].status != last_builds[1].status
+  end
+
+  def timeout_in_minutes
+    timeout / 60
+  end
+
+  def timeout_in_minutes=(value)
+    self.timeout = value.to_i * 60
+  end
+
+  def skip_ref?(ref_name)
+    if skip_refs.present?
+      skip_refs.delete(" ").split(",").include?(ref_name)
+    else
+      false
+    end
+  end
+
+  def coverage_enabled?
+    coverage_regex.present?
   end
 end

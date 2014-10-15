@@ -15,10 +15,9 @@
         = f.text_area :scripts, class: 'form-control', rows: 14, placeholder: "bundle exec rake spec"
         .bs-callout.bs-callout-info
           %p
-            Each line below will be executed separately.
+            All lines will be concatenated in one file and executed.
             %br
-            If you need to change the working directory or the environment in a step, do so as follows
-          %code cd my_dir && MY_VAR=value ./my_script
+            If you change the working directory or the environment in one line - it will affect the next lines too
 
     .form-group
       = label_tag nil, class: 'control-label' do
@@ -36,10 +35,10 @@
             %strong git fetch
             .light Faster
     .form-group
-      = f.label :timeout, 'Timeout', class: 'control-label'
+      = f.label :timeout_in_minutes, 'Timeout', class: 'control-label'
       .col-sm-10
-        = f.number_field :timeout, class: 'form-control', min: '0'
-        .light In seconds per command
+        = f.number_field :timeout_in_minutes, class: 'form-control', min: '0'
+        .light per build in minutes
 
 
   %fieldset
@@ -71,6 +70,22 @@
           = f.label :public do
             = f.check_box :public
             %span.light Anyone can see project and builds list
+    .form-group
+      = f.label :coverage_regex, "Test coverage parsing", class: 'control-label'
+      .col-sm-10
+        .input-group
+          %span.input-group-addon /
+          = f.text_field :coverage_regex, class: 'form-control', placeholder: '\(\d+.\d+\%\) covered'
+          %span.input-group-addon /
+        .light We will use this regular expression to find test coverage output in build trace. Leave blank if you want to disable this feature
+        .bs-callout.bs-callout-info
+          %p Below are examples of regex for existing tools:
+          %ul
+            %li
+              Simplecov (Ruby) -
+              %code \(\d+.\d+\%\) covered
+
+
 
   %fieldset
     %legend Email notification
@@ -112,6 +127,10 @@
       = f.label :token, "CI token", class: 'control-label'
       .col-sm-10
         = f.text_field :token, class: 'form-control', placeholder: 'xEeFCaDAB89'
+    .form-group
+      = f.label :skip_refs, "Skip refs", class: 'control-label'
+      .col-sm-10
+        = f.text_field :skip_refs, class: 'form-control', placeholder: 'branch1, branch2'
 
   .form-actions
     = f.submit 'Save changes', class: 'btn btn-save'

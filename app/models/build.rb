@@ -8,8 +8,8 @@
 #  status      :string(255)
 #  finished_at :datetime
 #  trace       :text
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
+#  created_at  :datetime
+#  updated_at  :datetime
 #  sha         :string(255)
 #  started_at  :datetime
 #  tmp_file    :string(255)
@@ -25,13 +25,14 @@ class Build < ActiveRecord::Base
   serialize :push_data
 
   attr_accessible :project_id, :ref, :sha, :before_sha,
-    :status, :finished_at, :trace, :started_at, :push_data, :runner_id, :project_name
+    :status, :finished_at, :trace, :started_at, :push_data, :runner_id, :project_name, :coverage
 
   validates :before_sha, presence: true
   validates :sha, presence: true
   validates :ref, presence: true
   validates :status, presence: true
   validate :valid_commit_sha
+  validates :coverage, numericality: true, allow_blank: true
 
   scope :running, ->() { where(status: "running") }
   scope :pending, ->() { where(status: "pending") }
@@ -79,10 +80,18 @@ class Build < ActiveRecord::Base
       build.update_attributes finished_at: Time.now
       project = build.project
 
+      if project.web_hooks?
+        WebHookService.new.build_end(build)
+      end
+
       if project.email_notification?
         if build.status.to_sym == :failed || !project.email_only_broken_builds
           NotificationService.new.build_ended(build)
         end
+      end
+
+      if project.coverage_enabled?
+        build.update_coverage
       end
     end
 
@@ -193,6 +202,28 @@ class Build < ActiveRecord::Base
       finished_at - started_at
     elsif started_at
       Time.now - started_at
+    end
+  end
+
+  def update_coverage
+    coverage = extract_coverage(trace, project.coverage_regex)
+
+    if coverage.is_a? Numeric
+      update_attributes(coverage: coverage)
+    end
+  end
+
+  def extract_coverage(text, regex)
+    begin
+      matches = text.gsub(Regexp.new(regex)).to_a.last
+      coverage = matches.gsub(/\d+(\.\d+)?/).first
+
+      if coverage.present?
+        coverage.to_f
+      end
+    rescue => ex
+      # if bad regex or something goes wrong we dont want to interrupt transition
+      # so we just silentrly ignore error for now
     end
   end
 end

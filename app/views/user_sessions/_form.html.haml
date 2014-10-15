@@ -12,6 +12,7 @@
   %div
     = f.label :url, 'GitLab Server'
   %div
-    = f.select :url, GitlabCi.config.allowed_gitlab_urls.map {|url| [url, url] }, { placeholder: 'http://gitlab.company.com' }, class: 'form-control signin-select'
+    = f.select :url, GitlabCi.config.gitlab_server_urls.map {|url| [url, url] }, { placeholder: 'http://gitlab.company.com' }, class: 'form-control signin-select'
   %br
+  = hidden_field_tag 'return_to', params[:return_to]
   = f.submit "Sign in", class: 'btn btn-lg btn-success btn-block'

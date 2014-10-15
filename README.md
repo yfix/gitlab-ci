@@ -1,9 +1,9 @@
 ## GitLab CI is an open-source continuous integration server
 
-* [![build status](https://secure.travis-ci.org/gitlabhq/gitlab-ci.png)](https://travis-ci.org/gitlabhq/gitlab-ci)
-* [![Code Climate](https://codeclimate.com/github/gitlabhq/gitlab-ci.png)](https://codeclimate.com/github/gitlabhq/gitlab-ci)
-* [![Dependency Status](https://gemnasium.com/gitlabhq/gitlab-ci.png)](https://gemnasium.com/gitlabhq/gitlab-ci)
-* [![Coverage Status](https://coveralls.io/repos/gitlabhq/gitlab-ci/badge.png?branch=master)](https://coveralls.io/r/gitlabhq/gitlab-ci)
+[![build status](https://ci.gitlab.org/projects/2/status.png?ref=master)](https://ci.gitlab.org/projects/2?ref=master)
+[![Code Climate](https://codeclimate.com/github/gitlabhq/gitlab-ci.png)](https://codeclimate.com/github/gitlabhq/gitlab-ci)
+[![Dependency Status](https://gemnasium.com/gitlabhq/gitlab-ci.png)](https://gemnasium.com/gitlabhq/gitlab-ci)
+[![Coverage Status](https://coveralls.io/repos/gitlabhq/gitlab-ci/badge.png?branch=master)](https://coveralls.io/r/gitlabhq/gitlab-ci)
 
 ![Screen](https://gitlab.com/gitlab-org/gitlab-ci/raw/master/public/gitlab-ci-screenshot.png)
 
@@ -35,14 +35,12 @@ Hardware requirements:
 * Distributed by default: GitLab CI and build runners can run on separate machines providing more stability
 * Realtime logging: the current build log scrolls and updates every few seconds
 
-### Limitations
+### Roadmap
 
-The following features are not in GitLab CI but merge requests are very welcome:
+The following features are not yet in GitLab CI but merge requests are very welcome:
 
-* Build artifacts access
-* Build pipeline / build promotion actions
-
-To support parallel builds and deployments there is a [blog article with a roadmap](http://blog.gitlab.org/gitlab-ci-with-parallel-builds-and-deployments/).
+* [Build artifacts access](http://feedback.gitlab.com/forums/176466-general/suggestions/4522830-allow-access-to-build-artifacts-of-gitlab-ci)
+* For parallel builds, deployments, branch specific builds and build metrics there is a [blog article with implementation steps](http://blog.gitlab.org/gitlab-ci-with-parallel-builds-and-deployments/)
 
 ### Runners
 
@@ -59,7 +57,7 @@ __GitLab CI__ is a web application with an API that stores its state in a databs
 It manages projects/builds and provides a nice user interface.
 It uses the GitLab application API to authenticate users.
 
-__GitLab CI Runner__ is a pure ruby application which processes builds.
+[GitLab CI Runner](https://github.com/gitlabhq/gitlab-ci-runner) is a pure ruby application which processes builds.
 It can be deployed separately and works with GitLab CI through an API.
 
 In order to run tests you need at least 1 __GitLab CI__ instance and 1 __GitLab CI Runner__.
